@@ -1,25 +1,52 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import personsService from './services/persons'
+
 const Filter = ({filterName, handleChange, setFilterName}) => {
     return (<div>
         filter shown with <input value={filterName} onChange={handleChange(setFilterName)} />
     </div>)
+}
+const Person = ({person, handleDelete}) => {
+  return (
+    <div>
+      {person.name} {person.number}
+      <button onClick={handleDelete(person)}>delete</button>
+    </div>
+  )
 }
 const PersonForm  = ({persons, setPersons, handleChange}) => {
   const [newName, setNewName] = useState('')
   const [newNum, setNewNum] = useState('')
   const handleSubmit = (e) => {
     e.preventDefault()
-    if(!checkSameName(newName)){
-      setPersons([...persons, {name: newName, number: newNum, id: persons.length + 1}])
-      setNewName("")
-      setNewNum("")
+    const samePerson = findSameName(newName)
+    const newPerson = {name: newName, number: newNum}
+    if(!samePerson){
+      personsService.create(newPerson).then(response => {
+        const newData = response.data
+        setPersons([...persons, newData])
+        setNewName("")
+        setNewNum("")
+      })
     }else{
-      alert(`${newName} is already added to phonebook`)
+      if(window.confirm(`${newName} is already added to phonebook, replace the old number with a name one`)){
+        personsService.update(samePerson.id, newPerson).then(response => {
+          const updatePerson = response.data
+          setPersons(persons.map(person => person.id !== updatePerson.id? person : updatePerson))
+        }).catch(error => {
+          alert(
+            `the note '${newName}' was already deleted from server`
+          )
+          setPersons(persons.filter(person => person.id !== samePerson.id,))
+        }).finally(() => {
+          setNewName("")
+          setNewNum("")
+        })
+      }
     }
   }
-  const checkSameName = (val) => {
-    return persons.some(p => p.name === val)
+  const findSameName = (val) => {
+    return persons.find(p => p.name === val)
   }
   return (
     <form onSubmit={handleSubmit}>
@@ -37,7 +64,7 @@ const App = () => {
   const [persons, setPersons] = useState([])
   
   useEffect(() => {
-    axios.get('http://localhost:3001/persons')
+    personsService.getAll()
     .then(response => {
       const persons = response.data
       setPersons(persons)
@@ -53,6 +80,15 @@ const App = () => {
   const filterList = (persons) => {
     return persons.filter(p => p.name.indexOf(filterName) > -1)
   }
+  const handleDelete = (person) => () => {
+    if(window.confirm(`Delete ${person.name}?`)){
+      personsService.deletePerson(person.id)
+      .then(response => {
+        setPersons(persons.filter(p => p.id !== person.id))
+      })
+    }
+    
+  }
   return (
     <div>
       <h2>Phonebook</h2>
@@ -60,7 +96,7 @@ const App = () => {
       <h3>add a new</h3>
       <PersonForm persons={persons} setPersons={setPersons} handleChange={handleChange}></PersonForm>
       <h3>Numbers</h3>
-      {filterList(persons).map(p => <div key={p.name}>{p.name} {p.number}</div>)}
+      {filterList(persons).map(p => <Person key={p.name} person={p} handleDelete={handleDelete} />)}
     </div>
   )
 }
