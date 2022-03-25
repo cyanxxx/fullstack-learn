@@ -120,7 +120,7 @@ const App = () => {
         setSuccessMsg={setSuccessMsg}
       />
       <h3>Numbers</h3>
-      {filterList(persons).map(p => <Person key={p.name} person={p} handleDelete={handleDelete} />)}
+      {filterList(persons).map(p => <Person key={p.id} person={p} handleDelete={handleDelete} />)}
     </div>
   )
 }
