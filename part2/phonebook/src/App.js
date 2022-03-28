@@ -71,7 +71,7 @@ const PersonForm  = ({persons, setPersons, handleChange, setSuccessMsg, setErrMs
         <div>
           <button type="submit">add</button>
         </div>
-      </form>
+    </form>
   )
 }
 const App = () => {
