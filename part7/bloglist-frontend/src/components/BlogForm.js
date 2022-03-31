@@ -1,5 +1,9 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import {
+  TextField,
+  Button
+} from '@material-ui/core'
 
 const BlogForm = ({ handleChange, handleAddBlog }) => {
   const [title, setTitle] = useState('')
@@ -21,13 +25,17 @@ const BlogForm = ({ handleChange, handleAddBlog }) => {
       <h2>create New</h2>
       <form onSubmit={handleSubmit} id="blogForm">
         <div>
-                title: <input value={title} onChange={handleChange(setTitle)} id="title" />
+          <TextField label="title" value={title} onChange={handleChange(setTitle)} id="title"  />
         </div>
-        <div>author: <input value={author} onChange={handleChange(setAuthor)} id="author" /></div>
-        <div>url: <input value={url} onChange={handleChange(setUrl)} id="url" /></div>
         <div>
-          <button type="submit">add</button>
+          <TextField label="author" value={author} onChange={handleChange(setAuthor)} id="author"  />
         </div>
+        <div>
+          <TextField label="url" value={url} onChange={handleChange(setUrl)} id="url"  margin="normal" />
+        </div>
+        <Button type="submit" variant="contained" color="primary" style={{ marginBottom: '10px' }}>
+          add
+        </Button>
       </form>
     </div>
   )

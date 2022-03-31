@@ -219,6 +219,22 @@ describe('delete of a blog', () => {
     expect(authors).not.toContain(blogToDelete.author)
     expect(blogsAtEnd).not.toContain(blogsAtEnd.length - 1)
   })
+
+  describe('add comets', () => {
+    test('succeeds with valid data', async() => {
+      const blogsAtStart = await helper.blogsInDb()
+      const blogToUpdate= blogsAtStart[0]
+      const beforeCommentsLen = blogToUpdate.comments.length
+      const comment = {comment: 'Good'}
+      await api.post(`/api/blogs/${blogToUpdate.id}/comments`).set('Authorization', `bearer ${token}`).send(comment).expect(201).expect('Content-Type', /application\/json/)
+  
+      const blogsAtEnd = await helper.blogsInDb()
+      const afterBlog = blogsAtEnd.find(r => r.id === blogToUpdate.id)
+
+      expect(afterBlog.comments).toHaveLength(beforeCommentsLen + 1)
+      expect(afterBlog.comments).toContain('Good')
+    })
+  })
 })
 
 afterAll(() => {
