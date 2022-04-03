@@ -77,25 +77,23 @@ const filterAuthor = (books, args) => {
 const filterGenres = (books, args) => {
   return args.genre? books.filter(book => book.genres.includes(args.genre)) :  books
 }
+let books 
 const resolvers = {
   Query: {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
     // allBooks: (root, args) => filterGenres(filterAuthor(books, args), args),
     allBooks: async (root, args) => {
-      let books;
-      if(args.author && args.genre) {
+      let query = {}
+      if(args.author) {
         const author = await Author.findOne({name: args.author})
-        books = Book.find({ author: author._id, genres: args.genre}).populate('author')
-      }else if(args.author) {
-        const author = await Author.findOne({name: args.author})
-        books = Book.find({ author: author._id}).populate('author')
-      }else if(args.genre) {
-        books = Book.find({genres: args.genre}).populate('author')
-      }else{
-        books = Book.find({}).populate('author')
+        query.author = author.id
       }
-      return books
+      if(args.genre) {
+        query.genres = { $in: [genre] } 
+      }
+
+      return Book.find(query).populate('author')
      
     },
     // allAuthors: (root, args) => authors.map(author => ({
@@ -103,16 +101,17 @@ const resolvers = {
     //   bookCount: books.filter(b => b.author === author.name).length,
     //   born: author.born
     // }))
-    allAuthors: async (root, args) => {
-      const authors = await Author.find({}, ['born', 'name'])
-      for(let author of authors) {
-        author.bookCount = await Book.find({author: author._id}).count()
-      }
-      return authors
+    allAuthors: async () => {
+      books = await Book.find()
+      return Author.find({})
     },
     me: (root, args, context) => {
       return context.currentUser
     }
+  },
+  Author: {
+    bookCount: async (root) =>
+      books.filter(b => String(b.author) === String(root.id)).length 
   },
   Mutation: {
     createUser: (root, args) => {
@@ -141,23 +140,23 @@ const resolvers = {
     },
     addBook: async (root, args, context) => {
       const currentUser = context.currentUser
-      let book
       if (!currentUser) {
         throw new AuthenticationError("not authenticated")
       }
+      const { author, ...addBook } = args
+      let book = new Book(addBook)
       try{
-        const { author, ...addBook } = args
-        const existAuthor = await Author.findOne({name: author})
-        book = new Book({...addBook, author: existAuthor._id})
+        book.author = await Author.findOne({name: author})
         await book.save()
-        book.author = existAuthor
-        pubsub.publish('BOOK_ADDED', { bookAdded: book })
-        return book
       }catch(error){
         throw new UserInputError(error.message, {
           invalidArgs: args,
         })
       }
+      book = await Book.findById(book.id).populate('author') 
+      pubsub.publish('BOOK_ADDED', { bookAdded: book })
+
+      return book
     },
     editAuthor: async (root, args) => {
       const currentUser = context.currentUser
