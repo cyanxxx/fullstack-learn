@@ -5,14 +5,9 @@ import Books from './components/Books'
 import NewBook from './components/NewBook'
 import Login from './components/Login'
 import Recommend from './components/Recommend'
+import { ALL_BOOKS, BOOK_ADDED } from './queries'
 
-export const PERSON_ADDED = gql`
-  subscription {
-    bookAdd {
-      title
-    }
-  }
-`
+
 const App = () => {
   const [page, setPage] = useState('authors')
   const [token, setToken] = useState(null)
@@ -22,10 +17,24 @@ const App = () => {
     localStorage.clear()
     client.resetStore()
   }
-  useSubscription(PERSON_ADDED, {
+  const updateCacheWith = (addedBook) => {
+    const includedIn = (set, object) => 
+      set.map(p => p.id).includes(object.id)  
+
+    const dataInStore = client.readQuery({ query: ALL_BOOKS })
+    console.log(dataInStore)
+    if (!includedIn(dataInStore.allBooks, addedBook)) {
+      client.writeQuery({
+        query: ALL_BOOKS,
+        data: { allBooks : dataInStore.allBooks.concat(addedBook) }
+      })
+    }   
+  }
+  useSubscription(BOOK_ADDED, {
     onSubscriptionData: ({ subscriptionData }) => {
-      const addedBook= subscriptionData.data.bookAdd
+      const addedBook= subscriptionData.data.bookAdded
       alert(`${addedBook.title} added`)
+      updateCacheWith(addedBook)
     }
   })
   useEffect(() => {

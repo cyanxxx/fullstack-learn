@@ -1,17 +1,7 @@
 import React, { useEffect } from 'react';
-import { gql, useLazyQuery } from '@apollo/client';
+import { useLazyQuery } from '@apollo/client';
+import { ALL_BOOKS } from '../queries'
 
-const ALL_BOOKS = gql`
-query {
-  allBooks {
-    title
-    author{
-      name
-    }
-    published
-  }
-}
-`
 const Books = (props) => {
   const [allBooks, result]  = useLazyQuery(ALL_BOOKS)
   useEffect(() => {

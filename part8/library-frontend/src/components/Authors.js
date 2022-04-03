@@ -1,24 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { gql, useLazyQuery, useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import Select from 'react-select'
+import { ALL_AUTHORS, EDIT_AUTHOR } from '../queries'
 
-const ALL_AUTHORS = gql`
-query {
-  allAuthors  {
-    name
-    bookCount
-    born
-  }
-}
-`
-
-const EDIT_AUTHOR = gql`
-mutation($name: String!, $sentBornTo: Int!) {
-  editAuthor(name: $name, sentBornTo: $sentBornTo) {
-    name, born, bookCount
-  }
-}
-`
 
 const Authors = (props) => {
   const [allAuthors, result] = useLazyQuery(ALL_AUTHORS)
@@ -27,8 +11,7 @@ const Authors = (props) => {
   const [born, setBorn] = useState('')
   const handleSubmit = (e) => {
     e.preventDefault()
-    const result = editAuthor({variables: {name: nameOption.value, sentBornTo: parseInt(born)}})
-    
+    editAuthor({variables: {name: nameOption.value, sentBornTo: parseInt(born)}})
   }
   useEffect(() => {
     if(props.show) {

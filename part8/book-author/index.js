@@ -150,14 +150,14 @@ const resolvers = {
         const existAuthor = await Author.findOne({name: author})
         book = new Book({...addBook, author: existAuthor._id})
         await book.save()
-        
+        book.author = existAuthor
+        pubsub.publish('BOOK_ADDED', { bookAdded: book })
+        return book
       }catch(error){
         throw new UserInputError(error.message, {
           invalidArgs: args,
         })
       }
-      pubsub.publish('BOOK_ADDED', { bookAdded: book })
-      return book
     },
     editAuthor: async (root, args) => {
       const currentUser = context.currentUser
