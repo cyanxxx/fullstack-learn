@@ -1,9 +1,10 @@
 import React from 'react';
-import { Text, View, Pressable, StyleSheet } from 'react-native'
+import { Text, View, Pressable, StyleSheet, useEffect } from 'react-native'
 import FormikTextInput from './FormikTextInput'
 import { Formik } from 'formik';
 import theme from '../theme';
 import { object, string, number, date, InferType }  from 'yup';
+import useSignIn from '../hooks/useSignIn'
 
 const initialValues = {
   username: '',
@@ -36,9 +37,22 @@ const style = StyleSheet.create({
 })
 
 const SignIn = () => {
-  const onSubmit = (values) => {
-    console.log(values)
+  const [signIn, result] = useSignIn()
+  const onSubmit = async (values) => {
+    const { username, password } = values;
+    console.log(username, password )
+    try {
+      await signIn({ username, password });
+    } catch (e) {
+      console.log(e);
+    }
   }
+  // useEffect(() => {
+  //   if (result.data) {
+  //     const token = result.data.authenticate.accessToken
+  //     console.log(token)
+  //   }
+  // }, [result.data]) // eslint-disable-line
   return (
     <View style={style.container}>
       <Formik 
