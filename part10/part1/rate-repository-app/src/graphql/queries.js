@@ -28,13 +28,6 @@ query {
   }
 }${REPOSITORY_DETAILS}`
 
-
-const AUTHENTICATEINPUT_DETAILS = gql`
-  fragment AuthenticateInput on Authenticate {
-   username,
-   password
-}`
-
 export const LOGIN = gql`
 mutation Authenticate($credentials: AuthenticateInput) {
   authenticate(credentials: $credentials) {
@@ -42,3 +35,11 @@ mutation Authenticate($credentials: AuthenticateInput) {
     expiresAt
   }
 }`
+
+export const ME = gql`
+query{
+  me{
+    username
+  }
+}  
+`

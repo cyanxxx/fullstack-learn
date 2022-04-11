@@ -47,12 +47,7 @@ const SignIn = () => {
       console.log(e);
     }
   }
-  // useEffect(() => {
-  //   if (result.data) {
-  //     const token = result.data.authenticate.accessToken
-  //     console.log(token)
-  //   }
-  // }, [result.data]) // eslint-disable-line
+  
   return (
     <View style={style.container}>
       <Formik 
