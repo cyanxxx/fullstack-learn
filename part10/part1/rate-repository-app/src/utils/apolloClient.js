@@ -31,4 +31,4 @@ const createApolloClient = () => {
   });
 }
 
-export const apolloClient = createApolloClient(authStorage);
+export default createApolloClient

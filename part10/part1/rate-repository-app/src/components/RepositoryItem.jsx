@@ -66,7 +66,7 @@ const CardHeader = ({item}) => {
           <Image style={cardHeaderStyles.avatar} source={{uri: item.ownerAvatarUrl}} />
         </View>
         <View style={cardHeaderStyles.infoContainer}>
-          <Text style={cardFooterTextStyles.value}>{item.fullName}</Text>
+          <Text style={cardFooterTextStyles.value} testID="fullName">{item.fullName}</Text>
           <Text style={cardHeaderStyles.description}>{item.description}</Text>
           <View style={cardHeaderStyles.languageContainer}>
             <Text style={cardHeaderStyles.language}>{item.language}</Text>
@@ -106,7 +106,7 @@ const formatNum = (num) => num > 1000? (num / 1000).toFixed(1) + 'k' : num
 
 export default function RepositoryItem({item}) {
   return (
-    <View style={styles.container}>
+    <View testID="repositoryItem" style={styles.container}>
         <CardHeader item={item}></CardHeader>
         <CardFooter item={item}></CardFooter>
     </View>        
