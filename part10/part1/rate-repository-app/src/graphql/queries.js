@@ -14,7 +14,8 @@ const REPOSITORY_DETAILS = gql`
     name,
     id,
     ratingAverage,
-    reviewCount
+    reviewCount,
+    fullName
 }`
 
 export const GET_REPOSITORIES = gql`
