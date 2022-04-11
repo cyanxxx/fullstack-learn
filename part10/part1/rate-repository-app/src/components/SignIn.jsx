@@ -5,6 +5,7 @@ import { Formik } from 'formik';
 import theme from '../theme';
 import { object, string, number, date, InferType }  from 'yup';
 import useSignIn from '../hooks/useSignIn'
+import { useHistory } from 'react-router-native';
 
 const initialValues = {
   username: '',
@@ -38,11 +39,13 @@ const style = StyleSheet.create({
 
 const SignIn = () => {
   const [signIn, result] = useSignIn()
+  const history = useHistory()
   const onSubmit = async (values) => {
     const { username, password } = values;
     console.log(username, password )
     try {
       await signIn({ username, password });
+      history.push('/')
     } catch (e) {
       console.log(e);
     }

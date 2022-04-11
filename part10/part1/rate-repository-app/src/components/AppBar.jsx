@@ -6,6 +6,7 @@ import { Link } from 'react-router-native';
 import useAuthStorage from '../hooks/useAuthStorage'
 import { useQuery } from '@apollo/client';
 import { ME } from '../graphql/queries';
+import { useHistory } from 'react-router-native';
 
 const styles = StyleSheet.create({
   container: {
@@ -29,9 +30,11 @@ const AppBar = () => {
   const authStorage = useAuthStorage();
   const [me, setMe] = useState(null)
   const { data, error, loading } = useQuery(ME)
+  const history = useHistory()
   const handleLogout = () => {
     setMe(null)
     authStorage.removeAccessToken()
+    history.push('/')
   }
   useEffect(() => {
     if(data && data.me) {
