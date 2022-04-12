@@ -1,25 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, StyleSheet, Image, Pressable } from 'react-native'
-import { useParams, useHistory } from 'react-router-native';
-import * as Linking from 'expo-linking';
+import { useHistory } from 'react-router-native';
 import theme from '../theme';
-import useRepository from '../hooks/useRepository'
 
 const styles = StyleSheet.create({
     container: {
         padding: 10
-    },
-    githubButton: {
-      display: 'flex',
-      flexDirection: 'row',
-      backgroundColor: theme.colors.primary,
-      borderRadius: theme.button.borderRadius,
-      justifyContent: 'center',
-      padding: 10,
-      marginTop: 10
-    },
-    text: {
-      color: '#fff'
     }
 });
 const cardFooterTextStyles = StyleSheet.create({
@@ -144,20 +130,4 @@ export default function RepositoryItem({item, children}) {
   }
 }
 
-export function RouteRepositoryItem() {
-  const { id } = useParams()
-  const { repository } = useRepository(id)
-  const handleNav = () => {
-    Linking.openURL(repository);
-  }
-  if(!repository)return (<></>)
-  return (
-    <RepositoryItem item={repository}>
-      <Pressable onPress={handleNav} style={styles.githubButton}>
-        <Text style={styles.text}>
-          Open in Github
-        </Text>
-      </Pressable>
-    </RepositoryItem>          
-  )
-}
+
