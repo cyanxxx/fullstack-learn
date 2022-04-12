@@ -66,3 +66,11 @@ query($repositoryId: ID!){
   }
 }
 ${REPOSITORY_DETAILS}`
+
+export const CREATE_REVIEW = gql`
+mutation CreateReview($review: CreateReviewInput) {
+  createReview(review: $review) {
+    repositoryId
+  }
+}
+`
