@@ -46,10 +46,14 @@ const RepositoryListHeader = ({searchQuery, onChangeSearch, ...props}) => {
   )
 }
 
-export const RepositoryListContainer = ({ repositories, ...props }) => {
+export const RepositoryListContainer = ({ repositories, fetchMore, ...props }) => {
   const repositoryNodes = repositories
   ? repositories.edges.map((edge) => edge.node)
   : [];
+
+  const onEndReach = () => {
+    fetchMore();
+  };
 
   return (
     <FlatList
@@ -58,6 +62,8 @@ export const RepositoryListContainer = ({ repositories, ...props }) => {
       ListHeaderComponent={<RepositoryListHeader {...props} />}
       renderItem={({item}) => <RepositoryItem item={item}></RepositoryItem>}
       keyExtractor={(item) => item.id}
+      onEndReached={onEndReach}
+      onEndReachedThreshold={0.5}
     />
   );
 };
@@ -70,14 +76,16 @@ const RepositoryList = () => {
   const searchParam = {
     searchKeyword: query,
     order: selectedOrder,
+    first: 8
   }
-  const { repositories } = useRepositories(searchParam);
+  const { repositories, fetchMore } = useRepositories(searchParam);
   return <RepositoryListContainer 
       repositories={repositories} 
       setSelectedOrder={setSelectedOrder} 
       selectedOrder={selectedOrder}
       searchQuery={searchQuery}
       onChangeSearch={onChangeSearch}
+      fetchMore={fetchMore}
     />;
 };
 

@@ -102,7 +102,7 @@ const ReviewItem = ({ review }) => {
 
 export function SingleRepository() {
     const { id } = useParams()
-    const { repository } = useRepository(id)
+    const { repository, fetchMore } = useRepository({id, first: 3})
     if(!repository)return (<></>)
     const reviews = repository.reviews.edges.map(edge => edge.node)
     return (
@@ -111,6 +111,8 @@ export function SingleRepository() {
           renderItem={({ item }) => <ReviewItem review={item} />}
           keyExtractor={({ id }) => id}
           ListHeaderComponent={() => <RepositoryInfo repository={repository} />}
+          onEndReached={fetchMore}
+          onEndReachedThreshold={0.5}
         />
               
     )
