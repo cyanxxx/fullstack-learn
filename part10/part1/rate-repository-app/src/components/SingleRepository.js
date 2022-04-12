@@ -83,7 +83,7 @@ const getDateString = (str) => {
   return format(date, 'dd.MM.yyyy')
 }
 
-const ReviewItem = ({ review }) => {
+export const ReviewItem = ({ review }) => {
   return (
     <View style={reviewStyle.container} >
        <View style={reviewStyle.card}>

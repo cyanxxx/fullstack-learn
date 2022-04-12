@@ -18,6 +18,31 @@ const REPOSITORY_DETAILS = gql`
     fullName
 }`
 
+const PAGE_DETAIL = gql`
+  fragment PageDetail on PageInfo {
+    hasPreviousPage
+      hasNextPage
+      startCursor
+      endCursor
+  }
+`
+
+const REVIEW_DETAIL = gql`
+  fragment ReviewDetail on Review {
+    id
+    text
+    rating
+    createdAt
+    user {
+      id
+      username
+    }
+    repository {
+      url
+    }
+  }
+`
+
 export const GET_REPOSITORIES = gql`
 query repositories($orderBy: AllRepositoriesOrderBy, $orderDirection: OrderDirection, $searchKeyword: String, $first: Int, $after: String){
   repositories(orderBy: $orderBy, orderDirection: $orderDirection, searchKeyword: $searchKeyword, first: $first, after: $after) {
@@ -42,12 +67,23 @@ mutation Authenticate($credentials: AuthenticateInput) {
 }`
 
 export const ME = gql`
-query{
+query getCurrentUser($includeReviews: Boolean = false) {
   me{
     username
+    reviews @include(if: $includeReviews) {
+      edges {
+        node {
+          ...ReviewDetail
+        }
+        cursor
+      }
+      pageInfo {
+        ...PageDetail
+      }
+    }
   }
 }  
-`
+${PAGE_DETAIL}${REVIEW_DETAIL}`
 
 export const REPOSITORY = gql`
 query($repositoryId: ID!, $first: Int, $after: String){
@@ -56,14 +92,7 @@ query($repositoryId: ID!, $first: Int, $after: String){
     reviews(first: $first, after: $after) {
       edges {
         node {
-          id
-          text
-          rating
-          createdAt
-          user {
-            id
-            username
-          }
+         ...ReviewDetail
         }
         cursor
       } 
@@ -75,12 +104,18 @@ query($repositoryId: ID!, $first: Int, $after: String){
     }
   }
 }
-${REPOSITORY_DETAILS}`
+${REPOSITORY_DETAILS}${REVIEW_DETAIL}`
 
 export const CREATE_REVIEW = gql`
 mutation CreateReview($review: CreateReviewInput) {
   createReview(review: $review) {
     repositoryId
   }
+}
+`
+
+export const DELETE_REVIEW = gql`
+mutation DeleteReview($deleteReviewId: ID!) {
+  deleteReview(id: $deleteReviewId)
 }
 `
