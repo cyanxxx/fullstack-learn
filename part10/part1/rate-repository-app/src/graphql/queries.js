@@ -44,3 +44,11 @@ query{
   }
 }  
 `
+
+export const REPOSITORY = gql`
+query($repositoryId: ID!){
+  repository(id: $repositoryId) {
+    ...RepositoryDetail
+  }
+}
+${REPOSITORY_DETAILS}`

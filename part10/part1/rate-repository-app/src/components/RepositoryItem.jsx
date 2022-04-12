@@ -1,10 +1,25 @@
-import React from 'react'
-import { View, Text, StyleSheet, Image } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { View, Text, StyleSheet, Image, Pressable } from 'react-native'
+import { useParams, useHistory } from 'react-router-native';
+import * as Linking from 'expo-linking';
 import theme from '../theme';
+import useRepository from '../hooks/useRepository'
 
 const styles = StyleSheet.create({
     container: {
         padding: 10
+    },
+    githubButton: {
+      display: 'flex',
+      flexDirection: 'row',
+      backgroundColor: theme.colors.primary,
+      borderRadius: theme.button.borderRadius,
+      justifyContent: 'center',
+      padding: 10,
+      marginTop: 10
+    },
+    text: {
+      color: '#fff'
     }
 });
 const cardFooterTextStyles = StyleSheet.create({
@@ -104,11 +119,45 @@ const CardFooterText = ({label, value}) => {
 
 const formatNum = (num) => num > 1000? (num / 1000).toFixed(1) + 'k' : num
 
-export default function RepositoryItem({item}) {
+export default function RepositoryItem({item, children}) {
+  const history = useHistory()
+  const handleNav = () => {
+    history.push(`/repository/${item.id}`)
+  }
+  if(children) {
+    return (
+         <View testID="repositoryItem" style={styles.container}>
+            <CardHeader item={item}></CardHeader>
+            <CardFooter item={item}></CardFooter>
+            {children}
+        </View>    
+    )
+  }else{
+    return (
+      <Pressable onPress={handleNav}>
+        <View testID="repositoryItem" style={styles.container}>
+          <CardHeader item={item}></CardHeader>
+          <CardFooter item={item}></CardFooter>
+        </View>    
+      </Pressable>
+    )
+  }
+}
+
+export function RouteRepositoryItem() {
+  const { id } = useParams()
+  const { repository } = useRepository(id)
+  const handleNav = () => {
+    Linking.openURL(repository);
+  }
+  if(!repository)return (<></>)
   return (
-    <View testID="repositoryItem" style={styles.container}>
-        <CardHeader item={item}></CardHeader>
-        <CardFooter item={item}></CardFooter>
-    </View>        
+    <RepositoryItem item={repository}>
+      <Pressable onPress={handleNav} style={styles.githubButton}>
+        <Text style={styles.text}>
+          Open in Github
+        </Text>
+      </Pressable>
+    </RepositoryItem>          
   )
 }
