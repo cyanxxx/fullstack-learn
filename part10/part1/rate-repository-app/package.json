@@ -38,8 +38,10 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-40.0.1.tar.gz",
+    "react-native-paper": "^4.12.0",
     "react-native-web": "~0.13.12",
     "react-router-native": "5",
+    "use-debounce": "^7.0.1",
     "yup": "^0.32.11"
   },
   "devDependencies": {
